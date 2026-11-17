@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { BoxGeometry, PlaneGeometry, CylinderGeometry, SphereGeometry, MeshStandardMaterial, CanvasTexture, SRGBColorSpace, Group, MathUtils, Vector3, type OrthographicCamera } from 'three'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib'
 import RobotCodex from './RobotCodex'
+import type { RobotPersonality } from './robotMotion'
 import { STATIONS, type StationId, type TestResult, type useDemo } from '../demo'
 import { sampleRoute } from '../route'
 import { STATION_POSITIONS, DESK_SIZE, PLATFORM_SIZE, type Vec3 } from '../layout'
@@ -12,6 +13,23 @@ import { STATION_POSITIONS, DESK_SIZE, PLATFORM_SIZE, type Vec3 } from '../layou
 export { STATION_POSITIONS } from '../layout'
 
 type Demo = ReturnType<typeof useDemo>
+const personalities: Record<StationId, RobotPersonality> = {
+  tendencias: 'curious', guion: 'writer', pruebas: 'tester', voz: 'voice',
+  edicion: 'editor', portada: 'designer', publicacion: 'publisher', retencion: 'analyst',
+}
+
+function useReducedMotion() {
+  const [reduced, setReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const update = () => setReduced(media.matches)
+    update()
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
+  return reduced
+}
+
 const geo = {
   box: new BoxGeometry(1, 1, 1), rounded: new RoundedBoxGeometry(1, 1, 1, 2, 0.08),
   plane: new PlaneGeometry(1, 1), cylinder: new CylinderGeometry(1, 1, 1, 12),
@@ -35,6 +53,7 @@ const mat = {
   leaf: new MeshStandardMaterial({ color: '#609d7c', roughness: 0.9 }),
   pot: new MeshStandardMaterial({ color: '#b17d5e', roughness: 1 }),
   light: new MeshStandardMaterial({ color: '#fbe4ad', emissive: '#ffc979', emissiveIntensity: 1.4 }),
+  card: new MeshStandardMaterial({ color: '#d2ffe7', emissive: '#87efce', emissiveIntensity: 1.5, toneMapped: false, roughness: 0.4 }),
   mint: new MeshStandardMaterial({ color: '#a6edcc', emissive: '#6cc99f', emissiveIntensity: 0.6 }),
   night: new MeshStandardMaterial({ color: '#101e39', emissive: '#152b4a', emissiveIntensity: 0.4 }),
   city: new MeshStandardMaterial({ color: '#243a55', roughness: 1 }),
@@ -121,10 +140,14 @@ function DeskLamp({ mirrored = false }: { mirrored?: boolean }) {
   </group>
 }
 
-function Station({ id, demo, onSelect }: { id: StationId; demo: Demo; onSelect: (id: StationId) => void }) {
+function Station({ id, demo, onSelect, selected, interactionKey, reducedMotion }: { id: StationId; demo: Demo; onSelect: (id: StationId) => void; selected: boolean; interactionKey: number; reducedMotion: boolean }) {
   const station = STATIONS.find(s => s.id === id)!
   const status = demo.getStatus(id)
   const p = STATION_POSITIONS[id]
+  // Celebrate only finished work in this run; pending voice/statistics never fake a result.
+  // Guion's celebration starts after the hand-off, so it can keep extending the card.
+  const completed = demo.stage !== 'idle' && status.kind === 'ready'
+    && (id !== 'guion' || demo.elapsed >= 5)
   return <group position={p} onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }} onPointerOut={() => { document.body.style.cursor = 'auto' }}>
     <Block position={[0, -0.08, 0]} scale={PLATFORM_SIZE} material={mat.wood} />
     {p[1] > 0.2 && <Block position={[0, -p[1] / 2 - 0.01, 0]} scale={[PLATFORM_SIZE[0], p[1] - 0.08, PLATFORM_SIZE[2]]} material={mat.edge} />}
@@ -141,7 +164,20 @@ function Station({ id, demo, onSelect }: { id: StationId; demo: Demo; onSelect: 
       <Monitor id={id} demo={demo} onSelect={onSelect} />
       <DeskDetails id={id} />
     </group>
-    <RobotCodex color={station.accent} position={[0.6, 0.035, -0.29]} rotation={[0, -0.12, 0]} mode={id === 'guion' && demo.stage === 'pickup' ? 'delivering' : status.kind === 'working' ? 'working' : 'idle'} showCard={false} accessory={id === 'voz' ? 'headset' : id === 'pruebas' ? 'glasses' : 'none'} onClick={() => onSelect(id)} />
+    <RobotCodex
+      personality={personalities[id]}
+      selected={selected}
+      interactionKey={interactionKey}
+      completed={completed}
+      reducedMotion={reducedMotion}
+      color={station.accent}
+      position={[0.6, 0.035, -0.29]}
+      rotation={[0, -0.12, 0]}
+      mode={id === 'guion' && demo.stage === 'pickup' ? 'delivering' : status.kind === 'working' ? 'working' : 'idle'}
+      showCard={false}
+      accessory={id === 'voz' ? 'headset' : id === 'pruebas' ? 'glasses' : 'none'}
+      onClick={() => onSelect(id)}
+    />
   </group>
 }
 
@@ -210,7 +246,7 @@ function Room() {
   </group>
 }
 
-function Courier({ demo }: { demo: Demo }) {
+function Courier({ demo, reducedMotion }: { demo: Demo; reducedMotion: boolean }) {
   const group = useRef<Group>(null)
   const delivering = demo.stage === 'pickup' || demo.stage === 'testing'
   useFrame((_, dt) => {
@@ -223,7 +259,7 @@ function Courier({ demo }: { demo: Demo }) {
   })
   if (!['pickup', 'walking', 'testing'].includes(demo.stage)) return null
   return <group ref={group} position={[-2.05, 0.12, 1.45]}>
-    <RobotCodex color="#dcb583" mode={delivering ? 'delivering' : 'walking'} accessory="backpack" showCard={false} />
+    <RobotCodex personality="courier" reducedMotion={reducedMotion} color="#dcb583" mode={delivering ? 'delivering' : 'walking'} accessory="backpack" showCard={false} />
   </group>
 }
 
@@ -236,22 +272,22 @@ function EpisodeCard({ demo }: { demo: Demo }) {
     if (demo.stage === 'pickup') {
       const t = MathUtils.clamp((demo.getElapsed() - 3) / 1.6, 0, 1)
       const eased = t * t * (3 - 2 * t)
-      x = MathUtils.lerp(-3.22, -2.47, eased); y = MathUtils.lerp(1.54, 1.24, eased) + Math.sin(t * Math.PI) * 0.15; z = MathUtils.lerp(1.16, 1.775, eased); angle = -Math.PI / 2
+      x = MathUtils.lerp(-3.22, -2.47, eased); y = MathUtils.lerp(1.54, 1.24, eased) + Math.sin(t * Math.PI) * 0.5; z = MathUtils.lerp(1.16, 1.775, eased); angle = -Math.PI / 2
     } else if (demo.stage === 'walking') {
       const p = sampleRoute((demo.getElapsed() - 5) / 8)
       x = p.position[0] + Math.cos(p.angle) * 0.35 + Math.sin(p.angle) * 0.15
       z = p.position[2] - Math.sin(p.angle) * 0.35 + Math.cos(p.angle) * 0.15
       y = 1.05; angle = p.angle
     } else {
-      const t = MathUtils.clamp((demo.getElapsed() - 13) / 1.6, 0, 1)
+      const t = MathUtils.clamp((demo.getElapsed() - 13) / 2.8, 0, 1)
       const eased = t * t * (3 - 2 * t)
-      x = MathUtils.lerp(2.47, 4.43, eased); y = MathUtils.lerp(1.24, 0.96, eased) + Math.sin(t * Math.PI) * 0.28; z = MathUtils.lerp(3.825, 3.92, eased); angle = Math.PI / 2 * (1 - t)
+      x = MathUtils.lerp(2.47, 4.43, eased); y = MathUtils.lerp(1.24, 0.96, eased) + Math.sin(t * Math.PI) * 0.9; z = MathUtils.lerp(3.825, 3.92, eased); angle = Math.PI / 2 * (1 - t)
     }
     card.current.position.set(x, y, z)
     card.current.rotation.y = MathUtils.damp(card.current.rotation.y, angle, 10, dt)
   })
   if (!['pickup', 'walking', 'testing'].includes(demo.stage)) return null
-  return <group ref={card}><Block scale={[0.36, 0.23, 0.035]} material={mat.mint} rounded /><Block position={[0, 0.015, 0.021]} scale={[0.21, 0.025, 0.006]} material={mat.dark} /><Block position={[-0.045, -0.04, 0.021]} scale={[0.12, 0.015, 0.006]} material={mat.dark} /></group>
+  return <group ref={card}><Block scale={[0.48, 0.3, 0.035]} material={mat.card} rounded /><Block position={[0, 0.015, 0.021]} scale={[0.21, 0.025, 0.006]} material={mat.dark} /><Block position={[-0.045, -0.04, 0.021]} scale={[0.12, 0.015, 0.006]} material={mat.dark} /></group>
 }
 
 function CameraRig({ zoom, reset, focus, selected }: { zoom: number; reset: number; focus: boolean; selected: StationId | null }) {
@@ -269,7 +305,7 @@ function CameraRig({ zoom, reset, focus, selected }: { zoom: number; reset: numb
   useEffect(() => { init.current = !focus }, [focus])
   useEffect(() => {
     const cam = camera as OrthographicCamera
-    if (focus && selected && size.width < 760) cam.setViewOffset(size.width, size.height, 0, size.height * 0.28, size.width, size.height)
+    if (size.width < 760) cam.setViewOffset(size.width, size.height, 0, size.height * (focus && selected ? 0.28 : -0.10), size.width, size.height)
     else cam.clearViewOffset()
   }, [focus, selected, camera, size.width, size.height])
   const origin = useMemo(() => new Vector3(0, 1.4, 0), [])
@@ -311,7 +347,8 @@ function LabelProjector({ labels, courierLabel, demo }: { labels: React.RefObjec
   return null
 }
 
-export default function OfficeScene({ demo, selected, onSelect, zoom, reset, focus }: { demo: Demo; selected: StationId | null; onSelect: (id: StationId) => void; zoom: number; reset: number; focus: boolean }) {
+export default function OfficeScene({ demo, selected, interactionKey, onSelect, zoom, reset, focus }: { demo: Demo; selected: StationId | null; interactionKey: number; onSelect: (id: StationId) => void; zoom: number; reset: number; focus: boolean }) {
+  const reducedMotion = useReducedMotion()
   const labels = useRef<Map<StationId, HTMLButtonElement>>(new Map())
   const courierLabel = useRef<HTMLSpanElement>(null)
   return <>
@@ -319,7 +356,7 @@ export default function OfficeScene({ demo, selected, onSelect, zoom, reset, foc
       {STATIONS.map(station => <button key={station.id} ref={element => { if (element) labels.current.set(station.id, element); else labels.current.delete(station.id) }} className={`station-label ${selected === station.id ? 'is-selected' : ''}`} style={{ '--accent': station.accent } as React.CSSProperties} onClick={() => onSelect(station.id)} aria-label={`Abrir ${station.name}`}>
         <span className={`status-dot ${demo.getStatus(station.id).kind === 'working' ? 'is-working' : ''}`} />{station.name}{selected === station.id && <span>↗</span>}
       </button>)}
-      {['pickup', 'walking', 'testing'].includes(demo.stage) && <span ref={courierLabel} className="courier-label">{demo.stage === 'testing' ? 'Entrega completada ✓' : 'Mensajero · Episodio 001'}</span>}
+      {['pickup', 'walking', 'testing'].includes(demo.stage) && <span ref={courierLabel} className="courier-label">{demo.stage === 'testing' ? demo.elapsed < 15.8 ? 'Entregando episodio…' : 'Entrega completada ✓' : 'Mensajero · Episodio 001'}</span>}
     </div>
     <Canvas orthographic camera={{ position: [11.5, 15.5, 24], zoom: 42, near: 0.1, far: 100 }} dpr={[1, 1.4]} shadows={{ type: 1 }} gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }} onPointerMissed={() => { document.body.style.cursor = 'auto' }} fallback={<div className="canvas-fallback">Tu navegador necesita WebGL para mostrar la oficina. Puedes explorar los ocho agentes desde los botones de abajo.</div>}>
     <ambientLight intensity={1.05} color="#c5d9d5" />
@@ -327,8 +364,8 @@ export default function OfficeScene({ demo, selected, onSelect, zoom, reset, foc
     <directionalLight position={[-4, 12, 10]} intensity={2.4} color="#ffebcc" castShadow shadow-mapSize={[1024, 1024]} shadow-camera-left={-12} shadow-camera-right={12} shadow-camera-top={12} shadow-camera-bottom={-12} shadow-bias={-0.001} shadow-normalBias={0.03} />
     <directionalLight position={[8, 8, -7]} intensity={1.3} color="#88b6dd" />
     <Room />
-    {STATIONS.map(station => <Station key={station.id} id={station.id} demo={demo} onSelect={onSelect} />)}
-    <Courier demo={demo} />
+    {STATIONS.map(station => <Station key={station.id} id={station.id} demo={demo} onSelect={onSelect} selected={selected === station.id} interactionKey={selected === station.id ? interactionKey : 0} reducedMotion={reducedMotion} />)}
+    <Courier demo={demo} reducedMotion={reducedMotion} />
     <EpisodeCard demo={demo} />
     <LabelProjector labels={labels} courierLabel={courierLabel} demo={demo} />
     <CameraRig zoom={zoom} reset={reset} focus={focus} selected={selected} />

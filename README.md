@@ -76,3 +76,9 @@ CHROME_PATH=/usr/bin/google-chrome-stable node pruebas/recorrido.mjs
 ```
 
 Puedes cambiar la URL con `STUDIO_URL`. Las capturas de escritorio y móvil y el resultado se guardan en `pruebas/capturas/`.
+
+## Diseño de Turno
+
+Interfaz en carbón, papel y naranja, con navegación discreta y herramientas distintas para cada oficio. El componente reutilizable conserva el nombre técnico `RobotCodex`. En móvil, la selección enfoca al robot por encima del panel; la vista general deja espacio entre el título y la maqueta.
+
+Capturas revisadas: [escritorio](pruebas/capturas/escritorio-ancho-final.png), [móvil](pruebas/capturas/movil-final.png) y [detalle de Pruebas](pruebas/capturas/movil-enfoque-final.png).

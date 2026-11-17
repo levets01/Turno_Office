@@ -1,0 +1,17 @@
+{
+  "project": "Turno",
+  "build": "passed",
+  "domainAndRouteTests": "passed",
+  "browser": "Chrome headless, escritorio y móvil emulado",
+  "viewports": ["1920x900", "1440x1000", "390x844"],
+  "fullEpisode": "passed",
+  "livePanelResults": "passed",
+  "singleCourier": "passed",
+  "cardTransferVisible": true,
+  "eightFacesVisible": true,
+  "allStationsVisible": true,
+  "mobileFocus": "passed",
+  "draftDownloadAndReload": "passed",
+  "verticalPreviewQuestionThenAnswer": "passed",
+  "browserErrors": []
+}

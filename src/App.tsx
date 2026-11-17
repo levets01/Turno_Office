@@ -17,6 +17,7 @@ const stageMessages = {
 export default function App() {
   const demo = useDemo()
   const [selected, setSelected] = useState<StationId | null>(null)
+  const [interactionKey, setInteractionKey] = useState(0)
   const [zoom, setZoom] = useState(1)
   const [reset, setReset] = useState(0)
   const [focus, setFocus] = useState(false)
@@ -27,14 +28,14 @@ export default function App() {
     window.addEventListener('keydown', escape)
     return () => window.removeEventListener('keydown', escape)
   }, [])
-  function selectStation(id: StationId) { setSelected(id); setTab('office'); if (window.matchMedia('(max-width: 760px)').matches) setFocus(true) }
+  function selectStation(id: StationId) { setSelected(id); setInteractionKey(key => key + 1); setTab('office'); if (window.matchMedia('(max-width: 760px)').matches) setFocus(true) }
   function overview() { setZoom(1); setReset(n => n + 1); setFocus(false) }
   return <div className={`studio ${selected ? 'has-panel' : ''}`}>
     <header className="app-header">
       <a className="brand" href="/" aria-label="Turno, inicio"><span className="brand-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M4 5h20v6h-7v13h-6V11H4z" fill="currentColor"/><path d="M21 18h4v6h-4z" fill="#ed936d"/></svg></span><span>turno<span className="brand-period">.</span><small>ESTUDIO DE PROGRAMACIÓN</small></span></a>
       <nav className="view-tabs" aria-label="Vista del estudio">
         <button className={tab === 'office' ? 'active' : ''} onClick={() => { setTab('office'); setSelected(null); setFocus(false) }}><Box size={15} />La oficina</button>
-        <button className={tab === 'episode' ? 'active' : ''} onClick={() => { setTab('episode'); setSelected(demo.results.length ? 'edicion' : 'guion'); if (window.matchMedia('(max-width: 760px)').matches) setFocus(true) }}><Clapperboard size={15} />El episodio{demo.completed && <span className="new-dot" />}</button>
+        <button className={tab === 'episode' ? 'active' : ''} onClick={() => { setTab('episode'); setSelected(demo.results.length ? 'edicion' : 'guion'); setInteractionKey(key => key + 1); if (window.matchMedia('(max-width: 760px)').matches) setFocus(true) }}><Clapperboard size={15} />El episodio{demo.completed && <span className="new-dot" />}</button>
       </nav>
       <div className="header-actions"><span className="local-badge"><i />Sesión local</span><button className={`help-button ${help ? 'active' : ''}`} aria-label="Cómo funciona" aria-expanded={help} onClick={() => setHelp(v => !v)}><CircleHelp size={19} /></button></div>
     </header>
@@ -43,7 +44,7 @@ export default function App() {
       <div className="scene-intro"><div className="eyebrow"><span />ESTUDIO INTERACTIVO / 01</div><h1>Un Short.<br /><span>Ocho oficios.</span></h1><p>Guion, código y un turno de noche.<br />Entra en cualquier escritorio.</p><span className="intro-rule" /><span className="intro-note">Todo empieza con una pregunta.</span></div>
       <div className="scene-meta"><span className="live-pill"><i /> OFICINA ABIERTA</span><span>8 puestos · 1 episodio</span><span className="time-note">Sin publicar <span>↗</span></span></div>
       <div className="canvas-wrap" aria-label="Oficina virtual 3D interactiva con ocho robots. Selecciona un escritorio o un agente.">
-        <Suspense fallback={<div className="loading-office"><Box size={32} /><span>Encendiendo el estudio…</span></div>}><OfficeScene demo={demo} selected={selected} onSelect={selectStation} zoom={zoom} reset={reset} focus={focus} /></Suspense>
+        <Suspense fallback={<div className="loading-office"><Box size={32} /><span>Encendiendo el estudio…</span></div>}><OfficeScene demo={demo} selected={selected} interactionKey={interactionKey} onSelect={selectStation} zoom={zoom} reset={reset} focus={focus} /></Suspense>
       </div>
       <div className="scene-bottom-line"><div className="interaction-hint"><MousePointer2 size={14} /><span>Selecciona un escritorio para ver su trabajo</span></div><div className="camera-controls" aria-label="Controles de cámara">
         {selected && <button aria-label="Acercar al agente seleccionado" title="Ver al agente" className={focus ? 'active' : ''} onClick={() => setFocus(v => !v)}><Focus size={17} /></button>}
@@ -51,7 +52,7 @@ export default function App() {
         <button onClick={() => setZoom(v => Math.min(2.1, v + 0.2))} disabled={zoom >= 2.1} aria-label="Acercar cámara" title="Acercar"><ZoomIn size={17} /></button><span />
         <button onClick={overview} aria-label="Volver a la vista general" title="Vista general"><Maximize2 size={16} /></button>
       </div></div>
-      {help && <div className="help-popover" role="dialog" aria-label="Cómo funciona Turno"><button className="help-close" onClick={() => setHelp(false)} aria-label="Cerrar ayuda"><X size={17} /></button><span className="eyebrow">CÓMO RECORRER EL ESTUDIO</span><h2>El recorrido, en tres pasos.</h2><p>Toca un robot, una pantalla o un puesto para conocer su tarea. Arrastra la oficina para cambiar el ángulo y usa los controles para acercarte.</p><div><span>01</span><p>Pulsa <b>Probar un Short</b>. Guion prepara el episodio.</p></div><div><span>02</span><p>Sigue al mensajero por el pasillo hasta Pruebas.</p></div><div><span>03</span><p>Explora los resultados y abre <b>Edición</b> para reproducir el Short.</p></div><small>Demo local de 22 segundos · Sin cuentas ni claves</small></div>}
+      {help && <div className="help-popover" role="dialog" aria-label="Cómo funciona Turno"><button className="help-close" onClick={() => setHelp(false)} aria-label="Cerrar ayuda"><X size={17} /></button><span className="eyebrow">CÓMO RECORRER EL ESTUDIO</span><h2>El recorrido, en tres pasos.</h2><p>Toca un robot, una pantalla o un puesto para conocer su tarea. El agente te saludará. Arrastra la oficina para cambiar el ángulo y usa los controles para acercarte.</p><div><span>01</span><p>Pulsa <b>Probar un Short</b>. Guion prepara el episodio.</p></div><div><span>02</span><p>Sigue al mensajero por el pasillo hasta Pruebas.</p></div><div><span>03</span><p>Explora los resultados y abre <b>Edición</b> para reproducir el Short.</p></div><small>Demo local de 22 segundos · Sin cuentas ni claves</small></div>}
     </main>
 
     <section className="team-dock" aria-label="Los ocho agentes">
