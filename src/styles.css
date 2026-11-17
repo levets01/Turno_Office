@@ -1,4 +1,10 @@
+/* ESTILOS DE LA APLICACIÓN
+   Orden: base global → oficina y controles → puestos y demo → ficha del agente
+   → vista vertical → tamaños de pantalla → rótulos proyectados → identidad Turno.
+   La geometría 3D se define en OfficeScene.tsx; este archivo estiliza el HTML que la rodea. */
+/* Hoja local de fuentes; la tipografía también dispone de alternativas del sistema. */
 @import url('/fonts.css');
+/* Valores base compartidos: fuente, colores y variables reutilizadas por los componentes. */
 :root {
   font-family: 'Studio Sans',Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   color: #e8ede6;
@@ -12,6 +18,7 @@
   --muted: #85928a;
   --line: #29332d;
 }
+/* Normalización: las dimensiones incluyen borde y relleno; se eliminan márgenes del navegador. */
 * {
   box-sizing: border-box;
 }
@@ -29,6 +36,7 @@ button {
 button:disabled {
   cursor: default;
 }
+/* Contorno de foco para encontrar enlaces y botones cuando se navega con teclado. */
 button:focus-visible,a:focus-visible {
   outline: 2px solid var(--mint);
   outline-offset: 4px;
@@ -46,6 +54,7 @@ svg {
 p,h1,h2,h3 {
   margin: 0;
 }
+/* Distribución vertical de toda la página. La escena flexible ocupa el espacio entre las barras. */
 .studio {
   height: 100dvh;
   min-height: 760px;
@@ -54,6 +63,7 @@ p,h1,h2,h3 {
   overflow: hidden;
   background: radial-gradient(ellipse at 53% 44%,#24312a55,transparent 63%),#101716;
 }
+/* Cabecera persistente: marca a la izquierda, pestañas centrales y acciones a la derecha. */
 .app-header {
   height: 85px;
   flex-shrink: 0;
@@ -66,6 +76,7 @@ p,h1,h2,h3 {
   z-index: 30;
   background: #101716;
 }
+/* Logotipo, nombre y subtítulo del estudio. */
 .brand {
   display: flex;
   align-items: center;
@@ -98,6 +109,7 @@ p,h1,h2,h3 {
   color: #82978a;
   margin-top: 4px;
 }
+/* Pestañas de oficina/episodio y estado seleccionado. */
 .view-tabs {
   display: flex;
   gap: 5px;
@@ -132,6 +144,7 @@ p,h1,h2,h3 {
   border-radius: 100%;
   background: var(--mint);
 }
+/* Indicador de sesión y botón de ayuda de la cabecera. */
 .header-actions {
   display: flex;
   gap: 23px;
@@ -165,11 +178,13 @@ p,h1,h2,h3 {
   color: var(--mint);
   background: #233226;
 }
+/* Área relativa que sirve de referencia a la escena y a los elementos superpuestos. */
 .studio-main {
   min-height: 0;
   flex: 1;
   position: relative;
 }
+/* Título introductorio superpuesto; deja pasar los clics hacia la escena 3D. */
 .scene-intro {
   position: absolute;
   top: 31px;
@@ -207,6 +222,7 @@ p,h1,h2,h3 {
   font-size: 11px;
   color: #8c9c8d;
 }
+/* Información pequeña del estudio situada en la esquina opuesta al título. */
 .scene-meta {
   position: absolute;
   right: 39px;
@@ -242,6 +258,7 @@ p,h1,h2,h3 {
   font-size: 16px;
   color: #b4c3a9;
 }
+/* Contenedor de WebGL a tamaño completo. Los gestos táctiles se destinan al control de cámara. */
 .canvas-wrap {
   position: absolute;
   inset: 0;
@@ -251,6 +268,7 @@ p,h1,h2,h3 {
 .canvas-wrap>div {
   height: 100%!important;
 }
+/* Franja superpuesta de instrucciones y controles; solo los botones capturan interacción. */
 .scene-bottom-line {
   position: absolute;
   bottom: 14px;
@@ -273,6 +291,7 @@ p,h1,h2,h3 {
 .interaction-hint svg {
   color: #a0b99d;
 }
+/* Botones de acercar, alejar, enfocar y volver a la vista general. */
 .camera-controls {
   display: flex;
   align-items: center;
@@ -306,6 +325,7 @@ p,h1,h2,h3 {
   background: #3a483a;
   margin: 0 4px;
 }
+/* Rótulos de los escritorios: --accent llega desde los datos del agente y distingue cada oficio. */
 .station-label {
   display: flex;
   align-items: center;
@@ -326,6 +346,7 @@ p,h1,h2,h3 {
   background: #2c4031;
   color: #fff;
 }
+/* Punto de estado del puesto; la animación pulse indica trabajo en curso. */
 .status-dot {
   width: 4px;
   height: 4px;
@@ -335,6 +356,7 @@ p,h1,h2,h3 {
 .status-dot.is-working {
   animation: pulse 1s infinite;
 }
+/* Etiqueta que acompaña al mensajero durante el traslado y la entrega del episodio. */
 .courier-label {
   font-size: 9px;
   white-space: nowrap;
@@ -344,6 +366,7 @@ p,h1,h2,h3 {
   color: #22362b;
   box-shadow: 0 3px 10px #0005;
 }
+/* Lista accesible de los ocho puestos, como alternativa a tocar objetos de la escena. */
 .team-dock {
   display: flex;
   align-items: stretch;
@@ -375,6 +398,7 @@ p,h1,h2,h3 {
   color: #7c927d;
   white-space: nowrap;
 }
+/* Distribución de los botones de puestos; el texto secundario muestra el estado de la tarea. */
 .station-tabs {
   display: flex;
   flex: 1;
@@ -444,6 +468,7 @@ p,h1,h2,h3 {
 .station-tab.active .tab-arrow {
   display: block;
 }
+/* Barra del episodio: explicación, avance y acciones para iniciar, repetir o revisar la demo. */
 .demo-bar {
   display: flex;
   align-items: center;
@@ -504,6 +529,7 @@ p,h1,h2,h3 {
   align-items: center;
   gap: 15px;
 }
+/* Botón principal y su estado bloqueado mientras existe una ejecución en curso. */
 .try-button {
   display: flex;
   align-items: center;
@@ -541,6 +567,7 @@ p,h1,h2,h3 {
   background: transparent;
   white-space: nowrap;
 }
+/* Barra inferior cuyo ancho actualiza React con el tiempo transcurrido de la demo. */
 .demo-progress {
   position: absolute;
   bottom: 0;
@@ -555,6 +582,7 @@ p,h1,h2,h3 {
   background: #bbdfa3;
   transition: width .06s linear;
 }
+/* Créditos y versión de la aplicación en el borde inferior. */
 .app-footer {
   display: flex;
   align-items: center;
@@ -579,6 +607,7 @@ p,h1,h2,h3 {
   padding: 0 6px;
   color: #405840;
 }
+/* Ventana de ayuda superpuesta con las instrucciones del recorrido. */
 .help-popover {
   position: absolute;
   top: 20px;
@@ -630,6 +659,7 @@ p,h1,h2,h3 {
   color: #7b9475;
   font-size: 9px;
 }
+/* Mensajes durante la carga de la escena o cuando WebGL no está disponible. */
 .loading-office {
   height: 100%;
   display: flex;
@@ -646,6 +676,7 @@ p,h1,h2,h3 {
   line-height: 1.7;
   color: #c8e3bd;
 }
+/* Indicador giratorio del botón mientras trabaja el equipo. */
 .button-spinner {
   width: 13px;
   height: 13px;
@@ -654,6 +685,7 @@ p,h1,h2,h3 {
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
+/* Texto disponible para lectores de pantalla, oculto visualmente sin retirarlo del documento. */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -665,6 +697,7 @@ p,h1,h2,h3 {
   white-space: nowrap;
   border: 0;
 }
+/* Animaciones cortas de la interfaz: giro de espera y pulso de estado. */
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -675,7 +708,7 @@ p,h1,h2,h3 {
     opacity: .35;
   }
 }
-/* Agent details stay live while the shared episode progresses. */
+/* Ficha del agente: estructura fija con contenido que se actualiza durante la demo. */
 .agent-panel {
   position: fixed;
   top: 103px;
@@ -693,6 +726,7 @@ p,h1,h2,h3 {
   animation: panel-in .24s ease-out;
   overflow: hidden;
 }
+/* Cabecera de la ficha con número, nombre y botón de cierre. */
 .panel-header {
   display: flex;
   align-items: center;
@@ -739,6 +773,7 @@ p,h1,h2,h3 {
 .panel-close:hover {
   background: #344b30;
 }
+/* Zona desplazable del panel; limita el desplazamiento al contenido de la ficha. */
 .panel-scroll {
   padding: 19px 23px 24px;
   overflow-y: auto;
@@ -751,6 +786,7 @@ p,h1,h2,h3 {
   color: #afc1a8;
   margin-bottom: 16px;
 }
+/* Insignias visuales de disponible, trabajando, listo o pendiente de conexión. */
 .panel-status {
   display: inline-flex;
   gap: 7px;
@@ -779,6 +815,7 @@ p,h1,h2,h3 {
   color: #dbc28a;
   border-color: #5a5033;
 }
+/* Jerarquía de títulos y párrafos para tarea actual y resultado. */
 .panel-section {
   margin-top: 25px;
 }
@@ -797,6 +834,7 @@ p,h1,h2,h3 {
 .panel-result-text {
   color: #d4dfcb!important;
 }
+/* Contenedores de guion, borrador e integración pendiente dentro de la ficha. */
 .panel-script,.panel-draft,.panel-connection {
   margin-top: 22px;
   padding: 18px;
@@ -821,6 +859,7 @@ p,h1,h2,h3 {
   display: block;
   margin-top: 12px;
 }
+/* Tabla de expresiones JavaScript con valores y tipos devueltos por la demo. */
 .panel-tests {
   margin-top: 20px;
   background: #101b16;
@@ -869,6 +908,7 @@ p,h1,h2,h3 {
   margin-top: 4px;
   opacity: .65;
 }
+/* Color por tipo: el texto se presenta en rosa y los números en verde; las etiquetas refuerzan la diferencia. */
 .result-string {
   color: #f3a8ce;
 }
@@ -889,6 +929,7 @@ p,h1,h2,h3 {
 .panel-tests>.panel-caption {
   padding: 0 12px 12px;
 }
+/* Pie fijo del panel y botones comunes a descarga y reproducción. */
 .panel-footer {
   border-top: 1px solid #34432f;
   padding: 14px 23px;
@@ -928,6 +969,7 @@ p,h1,h2,h3 {
   color: #bbd3a9;
   border: 1px solid #425a38;
 }
+/* Composición cuadrada de la portada local: titular, expresión y marca. */
 .panel-cover {
   aspect-ratio: 1;
   display: flex;
@@ -979,6 +1021,7 @@ p,h1,h2,h3 {
   position: absolute;
   bottom: 15px;
 }
+/* Barras decorativas de la ficha de Voz; su altura no procede de una grabación. */
 .panel-wave {
   display: flex;
   align-items: center;
@@ -998,6 +1041,7 @@ p,h1,h2,h3 {
   font-weight: 500;
   line-height: 1.7;
 }
+/* Estado vacío de Retención, donde aún no existen estadísticas. */
 .panel-empty {
   text-align: center;
   padding: 27px 20px;
@@ -1021,6 +1065,7 @@ p,h1,h2,h3 {
   line-height: 1.7;
   margin-top: 10px;
 }
+/* Listado editorial de ejemplo con una insignia que identifica los datos predefinidos. */
 .panel-ideas {
   margin-top: 25px;
 }
@@ -1058,9 +1103,11 @@ p,h1,h2,h3 {
   font-size: 10px;
   margin-top: 5px;
 }
+/* Reproductor local del Short: pantalla vertical, progreso y controles. */
 .short-preview {
   margin-top: 23px;
 }
+/* Proporción 9:16 y distribución interna de marca, contenido y pie de cada toma. */
 .short-screen {
   aspect-ratio: 9/16;
   max-height: 460px;
@@ -1138,6 +1185,7 @@ p,h1,h2,h3 {
   color: #8da17f;
   padding-top: 20px;
 }
+/* Avance del Short, independiente del progreso de producción del episodio. */
 .short-progress {
   position: absolute;
   height: 3px;
@@ -1152,6 +1200,7 @@ p,h1,h2,h3 {
   background: #c4e7ad;
   transition: width .1s linear;
 }
+/* Fila de reproducir/pausar, reiniciar y contador de tiempo. */
 .short-controls {
   display: flex;
   align-items: center;
@@ -1164,9 +1213,11 @@ p,h1,h2,h3 {
   font-size: 9px;
   color: #9bb58c;
 }
+/* Asa visual del panel inferior: solo se muestra en móvil; no implementa arrastre. */
 .panel-handle {
   display: none;
 }
+/* Entrada suave del panel lateral al abrir un agente. */
 @keyframes panel-in {
   from {
     opacity: 0;
@@ -1177,6 +1228,7 @@ p,h1,h2,h3 {
     transform: translateX(0);
   }
 }
+/* Pantallas amplias: aumentan márgenes y textos para aprovechar el espacio disponible. */
 @media(min-width:1600px) {
   .scene-intro {
     top: 42px;
@@ -1211,6 +1263,7 @@ p,h1,h2,h3 {
     font-size: 18px;
   }
 }
+/* Pantallas medianas: se compacta la barra de puestos y se reduce el ancho de la ficha. */
 @media(max-width:1180px) {
   .dock-heading {
     display: none;
@@ -1256,6 +1309,7 @@ p,h1,h2,h3 {
     padding-right: 27px;
   }
 }
+/* Base móvil: ocho puestos en cuadrícula, acciones compactas y ficha que aparece desde abajo. */
 @media(max-width:760px) {
   .studio {
     height: 100dvh;
@@ -1402,6 +1456,7 @@ p,h1,h2,h3 {
     min-height: 99px;
     border-radius: 8px;
   }
+  /* La lista de ocho agentes pasa a dos filas de cuatro puestos. */
   .station-tabs {
     padding: 5px;
     display: grid;
@@ -1514,6 +1569,7 @@ p,h1,h2,h3 {
     width: min(340px,calc(100% - 26px));
     padding: 25px;
   }
+  /* La ficha ocupa como máximo el 56% de la altura y mantiene parte de la oficina a la vista. */
   .agent-panel {
     top: auto;
     left: 8px;
@@ -1589,12 +1645,14 @@ p,h1,h2,h3 {
     }
   }
 }
+/* Respeta movimiento reducido para transiciones CSS. Las animaciones 3D se regulan desde React. */
 @media(prefers-reduced-motion:reduce) {
   *,*::before,*::after {
     animation-duration: .01ms!important;
     transition-duration: .01ms!important;
   }
 }
+/* Capa HTML de rótulos: OfficeScene proyecta sus posiciones 3D en píxeles mediante transform. */
 .labels-layer {
   position: absolute;
   inset: 0;
@@ -1602,6 +1660,7 @@ p,h1,h2,h3 {
   pointer-events: none;
   overflow: hidden;
 }
+/* Solo las etiquetas interactivas reciben puntero; el espacio entre ellas deja operar la cámara. */
 .labels-layer .station-label,.labels-layer .courier-label {
   position: absolute;
   left: 0;
@@ -1615,6 +1674,7 @@ p,h1,h2,h3 {
 .canvas-wrap>div.labels-layer {
   height: 100%!important;
 }
+/* Ajuste móvil adicional: reduce la vista vertical para que se vea junto con sus controles. */
 @media(max-width:760px) {
   .short-screen {
     width: 150px;
@@ -1672,7 +1732,12 @@ p,h1,h2,h3 {
     opacity: .3;
   }
 }
-/* Turno — quiet interface, warm paper and workshop details. */
+/* IDENTIDAD FINAL DE TURNO
+   Las reglas anteriores construyen la interfaz y sus adaptaciones.
+   Esta segunda capa ajusta la apariencia a carbón, papel y naranja: para selectores
+   de igual prioridad, la declaración posterior prevalece. Conserva el orden al editar.
+   Los ajustes finales para pantallas grandes, medianas y móviles están al terminar. */
+/* Paleta y tipografía finales. Las variables conservan sus nombres para reutilizar los componentes. */
 :root {
   --mint: #e9a180;
   --muted: #929b9d;
@@ -1685,6 +1750,7 @@ p,h1,h2,h3 {
   background: radial-gradient(ellipse at 53% 48%,#343b402e,transparent 64%),#161b20;
   min-height: 720px;
 }
+/* Cabecera de Turno: proporciones compactas y navegación con una línea inferior de selección. */
 .app-header {
   height: 73px;
   padding: 0 34px;
@@ -1772,6 +1838,7 @@ p,h1,h2,h3 {
   background: #34383b;
   color: #f0ddd0;
 }
+/* Título editorial, nota introductoria e información de la oficina. */
 .scene-intro {
   top: 37px;
   left: 36px;
@@ -1857,6 +1924,7 @@ p,h1,h2,h3 {
   font-size: 11px;
   color: #8e9b9d;
 }
+/* Acabado de los controles de cámara y del mensaje de interacción. */
 .scene-bottom-line {
   left: 36px;
   right: 35px;
@@ -1887,6 +1955,7 @@ p,h1,h2,h3 {
 .camera-controls>span {
   background: #4a5253;
 }
+/* Rótulos finales con borde del color del agente; posición y proyección siguen a cargo de React. */
 .station-label {
   border: 1px solid #92958a30;
   border-left: 2px solid var(--accent);
@@ -1915,6 +1984,7 @@ p,h1,h2,h3 {
   font-family: monospace;
   box-shadow: 0 3px 6px #0002;
 }
+/* Barra de puestos con separadores discretos y estado del agente bajo su nombre. */
 .team-dock {
   border: 0;
   border-top: 1px solid #ffffff14;
@@ -1973,6 +2043,7 @@ p,h1,h2,h3 {
 .tab-arrow {
   color: #9da8a8;
 }
+/* Franja de papel para el ejercicio activo, el botón principal y la línea de progreso. */
 .demo-bar {
   margin: 13px 34px 0;
   border-radius: 3px;
@@ -2070,6 +2141,7 @@ p,h1,h2,h3 {
 .demo-progress>span {
   background: #ce875b;
 }
+/* Colores y espaciado del pie de Turno. */
 .app-footer {
   padding: 13px 35px 11px;
   font-size: 7px;
@@ -2084,6 +2156,7 @@ p,h1,h2,h3 {
 .footer-sep {
   color: #495b64;
 }
+/* Apariencia final de la ficha: superficies oscuras, bordes y jerarquía tipográfica. */
 .agent-panel {
   border-radius: 5px;
   border: 1px solid #465258;
@@ -2132,6 +2205,7 @@ p,h1,h2,h3 {
 .panel-role {
   color: #9fadb0;
 }
+/* Estados del panel con colores diferenciados y etiquetas legibles. */
 .panel-status {
   border-radius: 2px;
   font-size: 9px;
@@ -2172,6 +2246,7 @@ p,h1,h2,h3 {
 .panel-footer i {
   background: #c39371;
 }
+/* Tarjetas internas de contenido, resultados y acciones de la ficha. */
 .panel-script,.panel-draft,.panel-connection {
   border-radius: 3px;
   background: #28343a;
@@ -2221,6 +2296,7 @@ p,h1,h2,h3 {
   border-color: #51656c;
   color: #d2c5ae;
 }
+/* Portada final en tonos de papel, con el dilema numérico como protagonista. */
 .panel-cover {
   border-radius: 3px;
   border-width: 1px;
@@ -2243,6 +2319,7 @@ p,h1,h2,h3 {
 .panel-wave span {
   border-radius: 1px;
 }
+/* Tratamiento visual de estados vacíos e ideas de ejemplo. */
 .panel-empty {
   border-color: #4e6872;
   border-radius: 3px;
@@ -2272,6 +2349,7 @@ p,h1,h2,h3 {
 .panel-ideas>div>p>span {
   color: #819ca5;
 }
+/* Acabado de la previsualización vertical: contraste del código, pie y barra de progreso. */
 .short-screen {
   border-radius: 3px;
   background: #253a42;
@@ -2311,6 +2389,7 @@ p,h1,h2,h3 {
 .short-time {
   color: #91abb4;
 }
+/* Ayuda y estado de carga con la misma paleta que el resto del estudio. */
 .help-popover {
   background: #253138fa;
   border-color: #4b626b;
@@ -2332,6 +2411,7 @@ p,h1,h2,h3 {
 .loading-office {
   color: #c1b9a9;
 }
+/* Ajustes finales para escritorio amplio: refinan la base sin cambiar la distribución. */
 @media(min-width:1600px) {
   .app-header {
     height: 76px;
@@ -2373,6 +2453,7 @@ p,h1,h2,h3 {
     padding: 9px 15px;
   }
 }
+/* Ajustes finales para anchos intermedios: equilibran márgenes y tamaño de los textos. */
 @media(max-width:1180px) {
   .app-header {
     padding: 0 25px;
@@ -2407,6 +2488,7 @@ p,h1,h2,h3 {
     font-size: 15px;
   }
 }
+/* Ajustes finales para móvil: prevalecen sobre los bloques móviles anteriores de igual prioridad. */
 @media(max-width:760px) {
   .studio {
     min-height: 750px;
@@ -2588,6 +2670,7 @@ p,h1,h2,h3 {
     padding: 12px 15px 10px;
     letter-spacing: .5px;
   }
+  /* Ficha inferior compacta: su altura máxima conserva la escena por encima. */
   .agent-panel {
     top: auto;
     bottom: 8px;
@@ -2622,6 +2705,7 @@ p,h1,h2,h3 {
   .panel-section>p {
     font-size: 11px;
   }
+  /* Con una ficha abierta se retira el título y se suben los controles para despejar al robot enfocado. */
   .has-panel .scene-intro {
     display: none;
   }

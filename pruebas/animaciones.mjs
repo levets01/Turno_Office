@@ -61,7 +61,7 @@ try {
 
   await desktop.getByRole('button', { name: 'Pruebas', exact: true }).click();
   await waitGesture(desktop, 'tester', 'wave');
-  await desktop.waitForTimeout(450);
+  await desktop.waitForFunction(() => window.__turnoQAScene.getObjectByName('robot-tester').getObjectByName('right-arm').rotation.z > 1.9);
   evidence.wave = await state(desktop, 'tester');
   await capture(desktop, 'robots-saludo-escritorio');
   await desktop.waitForTimeout(2800);
@@ -77,6 +77,7 @@ try {
   await desktop.getByRole('button', { name: 'Pruebas', exact: true }).click();
   await desktop.waitForFunction(() => document.querySelector('[data-testid="stage"]')?.dataset.stage === 'producing', null, { timeout: 20000 });
   await waitGesture(desktop, 'tester', 'celebrate');
+  await desktop.waitForFunction(() => window.__turnoQAScene.getObjectByName('robot-tester').getObjectByName('right-arm').rotation.z > 1.9);
   evidence.celebration = await state(desktop, 'tester');
   await capture(desktop, 'robots-celebracion');
   await desktop.getByRole('dialog').getByText('"52"', { exact: true }).waitFor();
@@ -89,7 +90,7 @@ try {
   const mobile = await open({ width: 390, height: 844 }, true);
   await mobile.getByRole('button', { name: 'Voz', exact: true }).click();
   await waitGesture(mobile, 'voice', 'wave');
-  await mobile.waitForTimeout(750);
+  await mobile.waitForFunction(() => window.__turnoQAScene.getObjectByName('robot-voice').getObjectByName('right-arm').rotation.z > 1.9);
   await capture(mobile, 'robots-saludo-movil');
   assert.ok((await mobile.getByRole('dialog').boundingBox()).y > 150);
   await mobile.close();

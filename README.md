@@ -82,3 +82,31 @@ Puedes cambiar la URL con `STUDIO_URL`. Las capturas de escritorio y móvil y el
 Interfaz en carbón, papel y naranja, con navegación discreta y herramientas distintas para cada oficio. El componente reutilizable conserva el nombre técnico `RobotCodex`. En móvil, la selección enfoca al robot por encima del panel; la vista general deja espacio entre el título y la maqueta.
 
 Capturas revisadas: [escritorio](pruebas/capturas/escritorio-ancho-final.png), [móvil](pruebas/capturas/movil-final.png) y [detalle de Pruebas](pruebas/capturas/movil-enfoque-final.png).
+
+## Gestos de los robots
+
+Cada oficio tiene un hábito de reposo: Tendencias mira alrededor, Guion y Retención adoptan poses pensativas, Pruebas se ajusta las gafas, Voz toca el audífono y marca el ritmo, Edición acompaña el ritmo con la cabeza y Portada inclina la cabeza para examinar su trabajo. También se estiran a intervalos distintos.
+
+Al seleccionar un puesto, el agente saluda durante 2.2 segundos; volver a tocarlo repite el saludo. Una tarea terminada dispara una celebración de 2.6 segundos, seguida de su actividad habitual. Los movimientos de caminar y entregar tienen prioridad. Las manos alternan sobre el teclado y hacen pequeñas pausas para revisar el monitor.
+
+Las poses y sus tiempos se editan en `src/components/robotMotion.ts`; los grupos articulados y las transiciones se aplican en `RobotCodex.tsx`. Las props `personality`, `selected`, `interactionKey`, `completed` y `reducedMotion` conectan el modelo con la escena. Las animaciones usan refs y `useFrame`, sin renderizar React en cada fotograma ni cargar recursos nuevos. La preferencia del sistema de movimiento reducido desactiva los gestos repetitivos y conserva los movimientos funcionales suaves.
+
+Prueba de animaciones con el servidor de desarrollo abierto:
+
+```bash
+node pruebas/animaciones.mjs
+```
+
+## Cómo leer el código
+
+Los archivos de `src/` tienen comentarios en español al inicio de sus bloques. Para seguir el flujo de la aplicación, empieza por `main.tsx` (arranque), continúa con `App.tsx` (interfaz y selección) y después con `demo.ts` (etapas, cálculos y borrador compartido).
+
+- `components/OfficeScene.tsx`: construcción de la oficina, monitores, recorrido, tarjeta, cámara y rótulos.
+- `components/RobotCodex.tsx`: piezas del robot, articulaciones y aplicación de las animaciones.
+- `components/robotMotion.ts`: poses, saludos, gestos por oficio y prioridades de movimiento.
+- `components/AgentPanel.tsx` y `ShortPreview.tsx`: ficha del agente, descarga y secuencia vertical.
+- `layout.ts` y `route.ts`: posiciones, tamaños y recorrido con espacio libre para el mensajero.
+- `styles.css`: estilos por secciones, reglas para distintos tamaños de pantalla y ajustes finales de la identidad Turno.
+- `integrations/`: contratos de las conexiones futuras y mensajes del estado actual.
+
+Los comentarios señalan qué datos comparte cada bloque, qué provoca su actualización y dónde se liberan temporizadores, escuchas o recursos gráficos.

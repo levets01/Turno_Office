@@ -1,0 +1,560 @@
+{
+  "baseURL": "http://127.0.0.1:5173",
+  "passed": true,
+  "errors": [],
+  "evidence": {
+    "idleStart": {
+      "mode": "idle",
+      "gesture": "idle",
+      "reducedMotion": false,
+      "joints": {
+        "head": {
+          "rotation": [
+            0.03191643515392523,
+            -0.09657975822288778,
+            -0.003486449555913727
+          ],
+          "position": [
+            0,
+            1.06,
+            0
+          ]
+        },
+        "upper-body": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            -0.0018900920615381994,
+            0
+          ]
+        },
+        "left-arm": {
+          "rotation": [
+            -0.07357095094963652,
+            0,
+            -0.11035642642445477
+          ],
+          "position": [
+            -0.325,
+            0.94,
+            0
+          ]
+        },
+        "right-arm": {
+          "rotation": [
+            -0.07357095094963652,
+            0,
+            0.11035642642445477
+          ],
+          "position": [
+            0.325,
+            0.94,
+            0
+          ]
+        },
+        "left-leg": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            -0.145,
+            0.43,
+            0
+          ]
+        },
+        "right-leg": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            0.145,
+            0.43,
+            0
+          ]
+        }
+      }
+    },
+    "idleLater": {
+      "mode": "idle",
+      "gesture": "idle",
+      "reducedMotion": false,
+      "joints": {
+        "head": {
+          "rotation": [
+            0.024382695871920733,
+            -0.14133842120402296,
+            0.019008436163551808
+          ],
+          "position": [
+            0,
+            1.06,
+            0
+          ]
+        },
+        "upper-body": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            -0.008711202413702022,
+            0
+          ]
+        },
+        "left-arm": {
+          "rotation": [
+            -0.07982433444814784,
+            0,
+            -0.11973650167222177
+          ],
+          "position": [
+            -0.325,
+            0.94,
+            0
+          ]
+        },
+        "right-arm": {
+          "rotation": [
+            -0.07982433444814784,
+            0,
+            0.11973650167222177
+          ],
+          "position": [
+            0.325,
+            0.94,
+            0
+          ]
+        },
+        "left-leg": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            -0.145,
+            0.43,
+            0
+          ]
+        },
+        "right-leg": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            0.145,
+            0.43,
+            0
+          ]
+        }
+      }
+    },
+    "wave": {
+      "mode": "idle",
+      "gesture": "wave",
+      "reducedMotion": false,
+      "joints": {
+        "head": {
+          "rotation": [
+            -0.06709959985747815,
+            0.25628753225939316,
+            -0.057425980492480364
+          ],
+          "position": [
+            0,
+            1.06,
+            0
+          ]
+        },
+        "upper-body": {
+          "rotation": [
+            0,
+            0,
+            -0.02120370012500074
+          ],
+          "position": [
+            0,
+            0.00535467705766611,
+            0
+          ]
+        },
+        "left-arm": {
+          "rotation": [
+            -0.1817776294505955,
+            0,
+            -0.11999980327588795
+          ],
+          "position": [
+            -0.325,
+            0.94,
+            0
+          ]
+        },
+        "right-arm": {
+          "rotation": [
+            -0.11392578905059315,
+            0,
+            1.958937276967671
+          ],
+          "position": [
+            0.325,
+            0.94,
+            0
+          ]
+        },
+        "left-leg": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            -0.145,
+            0.43,
+            0
+          ]
+        },
+        "right-leg": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            0.145,
+            0.43,
+            0
+          ]
+        }
+      }
+    },
+    "courier": {
+      "mode": "walking",
+      "gesture": "walking",
+      "reducedMotion": false,
+      "joints": {
+        "head": {
+          "rotation": [
+            -0.012410434161850158,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            1.06,
+            0
+          ]
+        },
+        "upper-body": {
+          "rotation": [
+            0,
+            0,
+            -0.004414135710403949
+          ],
+          "position": [
+            0,
+            0.016903294408066347,
+            0
+          ]
+        },
+        "left-arm": {
+          "rotation": [
+            0.0165154701437598,
+            0,
+            -0.11999999983420409
+          ],
+          "position": [
+            -0.325,
+            0.94,
+            0
+          ]
+        },
+        "right-arm": {
+          "rotation": [
+            -0.6490233122579555,
+            0,
+            0.09891640509706423
+          ],
+          "position": [
+            0.325,
+            0.94,
+            0
+          ]
+        },
+        "left-leg": {
+          "rotation": [
+            -0.07415747993478633,
+            0,
+            0
+          ],
+          "position": [
+            -0.145,
+            0.44943679189589775,
+            0
+          ]
+        },
+        "right-leg": {
+          "rotation": [
+            0.07415747993478633,
+            0,
+            0
+          ],
+          "position": [
+            0.145,
+            0.44495327104875954,
+            0
+          ]
+        }
+      }
+    },
+    "celebration": {
+      "mode": "idle",
+      "gesture": "celebrate",
+      "reducedMotion": false,
+      "joints": {
+        "head": {
+          "rotation": [
+            -0.0684549893666054,
+            0.2667435604246862,
+            -0.01674039489345469
+          ],
+          "position": [
+            0,
+            1.06,
+            0
+          ]
+        },
+        "upper-body": {
+          "rotation": [
+            0,
+            0,
+            0.012598255846679028
+          ],
+          "position": [
+            0,
+            0.017338499451764078,
+            0
+          ]
+        },
+        "left-arm": {
+          "rotation": [
+            -0.10594274783919302,
+            0,
+            -2.046086896224879
+          ],
+          "position": [
+            -0.325,
+            0.94,
+            0
+          ]
+        },
+        "right-arm": {
+          "rotation": [
+            -0.10594323664374167,
+            0,
+            2.04608689622488
+          ],
+          "position": [
+            0.325,
+            0.94,
+            0
+          ]
+        },
+        "left-leg": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            -0.145,
+            0.43,
+            0
+          ]
+        },
+        "right-leg": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            0.145,
+            0.43,
+            0
+          ]
+        }
+      }
+    },
+    "reducedStart": {
+      "mode": "idle",
+      "gesture": "idle",
+      "reducedMotion": true,
+      "joints": {
+        "head": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            1.06,
+            0
+          ]
+        },
+        "upper-body": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            0,
+            0
+          ]
+        },
+        "left-arm": {
+          "rotation": [
+            -0.07999991577117582,
+            0,
+            -0.11999987365676372
+          ],
+          "position": [
+            -0.325,
+            0.94,
+            0
+          ]
+        },
+        "right-arm": {
+          "rotation": [
+            -0.07999991577117582,
+            0,
+            0.11999987365676372
+          ],
+          "position": [
+            0.325,
+            0.94,
+            0
+          ]
+        },
+        "left-leg": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            -0.145,
+            0.43,
+            0
+          ]
+        },
+        "right-leg": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            0.145,
+            0.43,
+            0
+          ]
+        }
+      }
+    },
+    "reducedLater": {
+      "mode": "idle",
+      "gesture": "idle",
+      "reducedMotion": true,
+      "joints": {
+        "head": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            1.06,
+            0
+          ]
+        },
+        "upper-body": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            0,
+            0
+          ]
+        },
+        "left-arm": {
+          "rotation": [
+            -0.07999999999085788,
+            0,
+            -0.11999999998628683
+          ],
+          "position": [
+            -0.325,
+            0.94,
+            0
+          ]
+        },
+        "right-arm": {
+          "rotation": [
+            -0.07999999999085788,
+            0,
+            0.11999999998628683
+          ],
+          "position": [
+            0.325,
+            0.94,
+            0
+          ]
+        },
+        "left-leg": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            -0.145,
+            0.43,
+            0
+          ]
+        },
+        "right-leg": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "position": [
+            0.145,
+            0.43,
+            0
+          ]
+        }
+      }
+    }
+  }
+}
