@@ -3,22 +3,22 @@
  * calcula resultados, avanza por etapas y ofrece un estado común para toda la interfaz.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { readStore, type StationId } from './commerce';
 
 // Los identificadores unen el catálogo, las posiciones 3D y las fichas de los agentes.
-export type StationId = 'tendencias' | 'guion' | 'pruebas' | 'voz' | 'edicion' | 'portada' | 'publicacion' | 'retencion';
 export type DemoStage = 'idle' | 'writing' | 'pickup' | 'walking' | 'testing' | 'producing' | 'complete';
 export type AgentStatus = { label: string; kind: 'idle' | 'working' | 'ready' | 'pending'; task: string; result: string };
 
 // Catálogo editable: nombres, oficio, número del puesto y color de cada robot.
 export const STATIONS: { id: StationId; name: string; role: string; initial: string; accent: string }[] = [
-  { id: 'tendencias', name: 'Tendencias', role: 'Encuentra la próxima idea', initial: '01', accent: '#efbf70' },
-  { id: 'guion', name: 'Guion', role: 'Convierte ideas en historias', initial: '02', accent: '#6de4d1' },
-  { id: 'pruebas', name: 'Pruebas', role: 'Comprueba cada línea', initial: '03', accent: '#91b5ff' },
-  { id: 'voz', name: 'Voz', role: 'Dale voz a la explicación', initial: '04', accent: '#c4a1f5' },
-  { id: 'edicion', name: 'Edición', role: 'Ensambla el Short', initial: '05', accent: '#efbf70' },
-  { id: 'portada', name: 'Portada', role: 'Diseña el primer vistazo', initial: '06', accent: '#f59cb8' },
-  { id: 'publicacion', name: 'Publicación', role: 'Prepara el próximo estreno', initial: '07', accent: '#8ecfb2' },
-  { id: 'retencion', name: 'Retención', role: 'Escucha a la audiencia', initial: '08', accent: '#8db9da' },
+  { id: 'products', name: 'Productos', role: 'Registra candidatos y evidencia', initial: '01', accent: '#efbf70' },
+  { id: 'suppliers', name: 'Proveedores', role: 'Gestiona contactos y cobertura', initial: '02', accent: '#6de4d1' },
+  { id: 'profitability', name: 'Rentabilidad', role: 'Calcula márgenes exactos', initial: '03', accent: '#91b5ff' },
+  { id: 'catalog', name: 'Catálogo', role: 'Prepara borradores versionados', initial: '04', accent: '#c4a1f5' },
+  { id: 'advertising', name: 'Publicidad', role: 'Autoriza propuestas locales', initial: '05', accent: '#efbf70' },
+  { id: 'orders', name: 'Pedidos', role: 'Conserva trazabilidad y estados', initial: '06', accent: '#f59cb8' },
+  { id: 'support', name: 'Soporte', role: 'Redacta respuestas verificables', initial: '07', accent: '#8ecfb2' },
+  { id: 'analytics', name: 'Analítica', role: 'Resume datos persistidos', initial: '08', accent: '#8db9da' },
 ];
 
 // Contenido predefinido del ejercicio; no se genera mediante una API de IA.
@@ -151,47 +151,19 @@ export function useDemo() {
   // Traduce el estado global a la tarea, etiqueta y resultado que consume cada puesto.
   // Paneles y monitores consultan esta misma función para actualizarse al mismo tiempo.
   const getStatus = useCallback((id: StationId): AgentStatus => {
-    const waiting: AgentStatus = { label: 'Disponible', kind: 'idle', task: STATIONS.find(s => s.id === id)!.role, result: 'Pulsa «Probar un Short» para preparar el episodio de JavaScript.' };
-    // Estos servicios aún no están conectados: sus mensajes nunca simulan audio ni estadísticas.
-    if (id === 'voz') return { label: 'Pendiente de conexión', kind: 'pending', task: 'Locutar el guion del episodio.', result: 'ElevenLabs pendiente de conexión. El Short se puede previsualizar sin audio.' };
-    if (id === 'retencion') return { label: 'Sin datos', kind: 'idle', task: 'Analizar las estadísticas del episodio cuando esté publicado.', result: 'Sin datos. No hay estadísticas reales ni métricas simuladas para este episodio.' };
-    // La idea es editorial y está marcada como ejemplo, sin tendencias en directo.
-    if (id === 'tendencias') return { label: hasStarted ? 'Idea seleccionada' : 'Explorando ideas', kind: hasStarted ? 'ready' : 'idle', task: 'Proponer preguntas de programación para el canal.', result: 'Idea de ejemplo: coerción de tipos en JavaScript. Selección editorial de demostración, sin datos de tendencias en directo.' };
-    // Publicación puede recuperar un borrador aunque la nueva sesión todavía esté en reposo.
-    if (id === 'publicacion' && (hasStarted || savedDraft)) return {
-      label: !hasStarted ? 'Borrador recuperado' : completed ? 'Borrador listo' : 'Preparando borrador',
-      kind: completed || !hasStarted ? 'ready' : 'idle',
-      task: 'Conservar el episodio para revisarlo antes de publicar.',
-      result: (completed || !hasStarted
-        ? draftPersisted ? 'Borrador guardado en este navegador; seguirá disponible al recargar. '
-          : 'Borrador disponible en esta sesión; el almacenamiento del navegador no está disponible. '
-        : 'Preparando el borrador local del episodio. ')
-        + 'YouTube pendiente de conexión; no se ha publicado ningún vídeo.',
-    };
-    // Los agentes que dependen de la ejecución permanecen disponibles hasta que se pulse iniciar.
-    if (!hasStarted) return waiting;
-    // Guion muestra primero la pregunta y después la explicación preparada.
-    if (id === 'guion') return elapsed < DEMO_TIMING.writing
-      ? { label: 'Escribiendo', kind: 'working', task: 'Preparar la pregunta inicial y una explicación breve.', result: EPISODE.title }
-      : { label: 'Guion listo', kind: 'ready', task: 'Explicar la diferencia entre concatenar y sumar.', result: EPISODE.explanation };
-    // Pruebas distingue tarjeta en camino, ejecución y resultados ya calculados.
-    if (id === 'pruebas') {
-      if (hasResults) return { label: '3 pruebas verificadas', kind: 'ready', task: 'Ejecutar las tres expresiones fijas en JavaScript.', result: 'Texto "52" · número 3 · número 7. Resultados calculados en este navegador.' };
-      if (stage === 'testing') return { label: 'Ejecutando pruebas', kind: 'working', task: 'Comprobar resultados y tipos de las tres expresiones.', result: 'Ejecutando operaciones definidas en código…' };
-      return { label: stage === 'walking' || stage === 'pickup' ? 'Tarjeta en camino' : 'Esperando guion', kind: 'idle', task: 'Esperar la tarjeta del mensajero.', result: 'Las pruebas aparecerán aquí al terminar, aunque mantengas abierto este panel.' };
-    }
-    // Portada y Edición solo ofrecen contenido después de verificar las expresiones.
-    if (id === 'portada') return hasResults
-      ? { label: 'Portada lista', kind: 'ready', task: 'Presentar el dilema con una portada legible.', result: '¿7 o 52? · JavaScript en un Short. Diseño de demostración generado localmente.' }
-      : { ...waiting, label: 'Esperando pruebas', task: 'Preparar la portada después de verificar la respuesta.' };
-    if (id === 'edicion') return hasResults
-      ? { label: completed ? 'Secuencia lista' : 'Montando secuencia', kind: completed ? 'ready' : 'working', task: 'Ordenar la pregunta, la explicación y la respuesta en formato vertical.', result: 'Previsualización local 9:16 de 12 segundos, sin audio. La pregunta aparece antes que la respuesta.' }
-      : { ...waiting, label: 'Esperando resultados', task: 'Montar el Short cuando termine la verificación.' };
-    return waiting;
-  }, [completed, draftPersisted, elapsed, hasResults, hasStarted, savedDraft, stage]);
+    const store = readStore();
+    const task = store.tasks.find(item => item.station === id);
+    const agent = STATIONS.find(item => item.id === id)!;
+    if (!task) return { label: 'Disponible', kind: 'idle', task: agent.role, result: 'Sin tareas pendientes. Ejecuta la operación o usa el puesto para crear una.' };
+    if (task.status === 'running' || task.status === 'queued') return { label: 'Trabajando', kind: 'working', task: agent.role, result: 'La tarea está pendiente o ejecutándose. No hay porcentajes inventados.' };
+    if (task.status === 'failed') return { label: 'Error', kind: 'pending', task: agent.role, result: task.error ?? 'Error sin detalle. Puedes reintentar desde la ficha.' };
+    const result = task.result ? JSON.stringify(task.result) : 'Tarea completada';
+    return { label: 'Tarea completada', kind: 'ready', task: agent.role, result };
+  }, []);
 
   // Contrato compartido con App, OfficeScene y AgentPanel.
   return { stage, running, completed, elapsed, getElapsed, episode: EPISODE, results, start, getStatus, savedDraft, draftPersisted };
 }
 
 export type Demo = ReturnType<typeof useDemo>;
+export type { StationId } from './commerce';

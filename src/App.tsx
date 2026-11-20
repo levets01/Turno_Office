@@ -3,13 +3,14 @@
  * y la interfaz HTML. Aquí se decide qué agente se abre y cómo se mueve la cámara.
  */
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { Box, ArrowUpRight, Play, RotateCcw, ZoomIn, ZoomOut, Maximize2, MousePointer2, ChevronRight, X, Code2, Mic, Clapperboard, Image, Upload, ChartNoAxesCombined, TrendingUp, FileText, CircleHelp, Focus } from 'lucide-react'
+import { Box, ArrowUpRight, Play, ZoomIn, ZoomOut, Maximize2, MousePointer2, ChevronRight, X, Mic, Clapperboard, Image, Upload, ChartNoAxesCombined, TrendingUp, CircleHelp, Focus } from 'lucide-react'
 import { STATIONS, DEMO_TIMING, useDemo, type StationId } from './demo'
-import AgentPanel from './components/AgentPanel'
+import { useCommerce } from './commerce'
+import CommercePanel from './components/CommercePanel'
 // Three.js se carga en un archivo separado; Suspense muestra un aviso mientras llega.
 const OfficeScene = lazy(() => import('./components/OfficeScene'))
 // Cada identificador de agente tiene el mismo icono en la lista de puestos.
-const icons = { tendencias: TrendingUp, guion: FileText, pruebas: Code2, voz: Mic, edicion: Clapperboard, portada: Image, publicacion: Upload, retencion: ChartNoAxesCombined }
+const icons = { products: TrendingUp, suppliers: Upload, profitability: ChartNoAxesCombined, catalog: Image, advertising: Mic, orders: Box, support: CircleHelp, analytics: ChartNoAxesCombined }
 // El mensaje inferior describe la etapa global, independientemente del panel abierto.
 const stageMessages = {
   idle: '¿Por qué "5" + 2 da "52"?',
@@ -24,6 +25,7 @@ const stageMessages = {
 export default function App() {
   // Una sola instancia mantiene sincronizados robots, monitores, progreso y paneles.
   const demo = useDemo()
+  const commerce = useCommerce()
   // selected abre la ficha; interactionKey permite saludar de nuevo al tocar el mismo puesto.
   const [selected, setSelected] = useState<StationId | null>(null)
   const [interactionKey, setInteractionKey] = useState(0)
@@ -51,7 +53,7 @@ export default function App() {
       {/* El episodio abre Guion mientras se prepara y Edición cuando ya hay resultados. */}
       <nav className="view-tabs" aria-label="Vista del estudio">
         <button className={tab === 'office' ? 'active' : ''} onClick={() => { setTab('office'); setSelected(null); setFocus(false) }}><Box size={15} />La oficina</button>
-        <button className={tab === 'episode' ? 'active' : ''} onClick={() => { setTab('episode'); setSelected(demo.results.length ? 'edicion' : 'guion'); setInteractionKey(key => key + 1); if (window.matchMedia('(max-width: 760px)').matches) setFocus(true) }}><Clapperboard size={15} />El episodio{demo.completed && <span className="new-dot" />}</button>
+        <button className={tab === 'episode' ? 'active' : ''} onClick={() => { setTab('episode'); setSelected('catalog'); setInteractionKey(key => key + 1); if (window.matchMedia('(max-width: 760px)').matches) setFocus(true) }}><Clapperboard size={15} />Operaciones{commerce.store.tasks.length > 0 && <span className="new-dot" />}</button>
       </nav>
       <div className="header-actions"><span className="local-badge"><i />Sesión local</span><button className={`help-button ${help ? 'active' : ''}`} aria-label="Cómo funciona" aria-expanded={help} onClick={() => setHelp(v => !v)}><CircleHelp size={19} /></button></div>
     </header>
@@ -89,13 +91,13 @@ export default function App() {
     <section className={`demo-bar ${demo.running ? 'is-running' : ''}`} aria-label="Demostración de un Short">
       <div className="demo-symbol"><span>JS</span><small>001</small></div>
       <div className="demo-copy"><div><span className="eyebrow">{demo.stage === 'idle' ? 'EL EJERCICIO DE HOY' : demo.completed ? 'EPISODIO 001 · BORRADOR' : 'EPISODIO 001 · EN PRODUCCIÓN'}</span>{demo.stage !== 'idle' && <span className="demo-counter">{Math.floor(demo.elapsed)} / 22 s</span>}</div><h2 data-testid="stage" data-stage={demo.stage}>{stageMessages[demo.stage]}</h2><p>{demo.stage === 'idle' ? 'Concatenación, coerción y una respuesta que no siempre es 7. Demo de 22 s.' : demo.episode.title}</p></div>
-      <div className="demo-actions">{demo.completed && <button className="review-button" onClick={() => selectStation('edicion')}>Ver el Short <ArrowUpRight size={15} /></button>}<button className="try-button" data-testid="demo-start" disabled={demo.running} onClick={demo.start}>{demo.running ? <span className="button-spinner" /> : demo.completed ? <RotateCcw size={15} /> : <Play size={15} fill="currentColor" />}<span>{demo.running ? 'El equipo está trabajando' : demo.completed ? 'Repetir demo' : 'Probar un Short'}</span>{!demo.running && !demo.completed && <ChevronRight size={16} />}</button></div>
+      <div className="demo-actions"><button className="try-button" data-testid="agents-run" disabled={commerce.running} onClick={commerce.runAll}>{commerce.running ? <span className="button-spinner" /> : <Play size={15} fill="currentColor" />}<span>{commerce.running ? 'Los agentes están trabajando' : 'Ejecutar los 8 agentes'}</span>{!commerce.running && <ChevronRight size={16} />}</button></div>
       {demo.stage !== 'idle' && <div className="demo-progress"><span style={{ width: `${demo.elapsed / DEMO_TIMING.total * 100}%` }} /></div>}
     </section>
     <footer className="app-footer"><span><i /> TURNO · UN ESTUDIO HECHO DE CÓDIGO.</span><span>TURNO <span className="footer-sep">/</span> V.01 <span className="footer-sep">·</span> DEMO LOCAL</span></footer>
     {/* Descripción accesible del único mensajero; las pruebas también usan este indicador. */}
     {['pickup', 'walking', 'testing'].includes(demo.stage) && <span className="sr-only" data-testid="courier">Mensajero único: {demo.stage === 'testing' ? 'llegó a Pruebas' : 'transportando episodio'}</span>}
     {/* Cerrar la ficha devuelve la interfaz a la oficina y desactiva el enfoque individual. */}
-    <AgentPanel station={selected} demo={demo} onClose={() => { setSelected(null); setFocus(false); setTab('office') }} />
+    {selected && <CommercePanel station={selected} demo={demo} commerce={commerce} onClose={() => { setSelected(null); setFocus(false); setTab('office') }} />}
   </div>
 }

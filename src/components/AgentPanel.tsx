@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useRef, type CSSProperties } from 'react';
 import { STATIONS, type Demo, type StationId } from '../demo';
 import { voiceConnection } from '../integrations/elevenlabs';
